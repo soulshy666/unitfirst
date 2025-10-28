@@ -6,7 +6,7 @@ using UnityEngine;
 public class Attack : MonoBehaviour
 {
     [Header("¹¥»÷")]
-    public float damage = 10;
+    public float damage;
     public float begindamage =10;
     public float attackRange;
     public float attackRate;

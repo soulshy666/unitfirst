@@ -86,7 +86,7 @@ public class Character : MonoBehaviour
         {
             hasCheckedFallDeath = false;
             // 调试信息：输出当前下落速度
-            Debug.Log($"[坠落检测] 空中下落速度：{rb.velocity.y:F2}", this);
+            //Debug.Log($"[坠落检测] 空中下落速度：{rb.velocity.y:F2}", this);
             return;
         }
 
@@ -94,7 +94,7 @@ public class Character : MonoBehaviour
         if (physicsCheck.Isground && !lastIsGround && !hasCheckedFallDeath)
         {
             // 调试信息：输出落地瞬间速度和阈值
-            Debug.Log($"[坠落检测] 落地瞬间速度：{rb.velocity.y:F2}，死亡阈值：{deathFallSpeed}", this);
+            //Debug.Log($"[坠落检测] 落地瞬间速度：{rb.velocity.y:F2}，死亡阈值：{deathFallSpeed}", this);
             if (rb.velocity.y < deathFallSpeed) // 例如：-15 < -10（下落更快，触发伤害）
             {
                 // 1. 计算超出阈值的速度（因都是负值，直接用阈值减当前速度，得到正数的超出量）

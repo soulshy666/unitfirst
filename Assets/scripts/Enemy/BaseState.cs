@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseState 
+public abstract class BaseState
 {
     protected Enemy currentenemy;
     public abstract void OnEnter(Enemy enemy);

@@ -11,6 +11,7 @@ using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
+    //5644335313453
     // Start is called before the first frame update
     public SpriteRenderer spriteRenderer;
     public Character character;
@@ -529,7 +530,7 @@ public class Player : MonoBehaviour
 
     private void Desh()
     {
-        if(physicsCheck.IsWall && transform.localScale.x == -1)
+        if(physicsCheck.IsWall )
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
         }

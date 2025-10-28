@@ -1,37 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class FrogChaseState : BaseState
+public class OrcChaseState : BaseState
 {
     public override void OnEnter(Enemy enemy)
     {
-        Debug.Log("青蛙追击状态");
+
+        Debug.Log("哥布林追击状态");
         currentenemy = enemy;
         currentenemy.currentSpeed = currentenemy.chaseSpeed;
-
-    }
+    } 
     public override void LogicUpdate()
     {
         currentenemy.currentStopTime = 0;
+        currentenemy.CheckWall();
         if (currentenemy.lostTimeCounter <= 0)
         {
             currentenemy.SwitchState(NPCState.Patrol);
         }
-        currentenemy.CheckWall();
-
 
         if (currentenemy.physicsCheck.IntAttack())
         {
             currentenemy.SwitchState(NPCState.Attack);
         }
-        
+
     }
+
+    
+
+   
 
     public override void PhysicsUpdate()
     {
-        // 获取当前敌人的PhysicsCheck组件（确保敌人对象上已挂载该组件）
+        // 获取当前敌人的PhysicsCheck组件（确保敌人对象上已挂载该组件)
         PhysicsCheck physicsCheck = currentenemy.GetComponent<PhysicsCheck>();
         if (physicsCheck == null)
         {
@@ -60,6 +62,6 @@ public class FrogChaseState : BaseState
     }
     public override void OnExit()
     {
-
     }
+   
 }

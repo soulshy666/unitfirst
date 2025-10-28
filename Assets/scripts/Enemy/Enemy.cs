@@ -18,7 +18,7 @@ public class Enemy : MonoBehaviour
     public Rigidbody2D rb;
     public Animator anim;
     public float moveSpeed;
-    public float chaseSpeed =250;
+    public float chaseSpeed ;
     public float currentSpeed ;
     public float hurtForce =10f;
     public Vector3 faceDir;
@@ -32,11 +32,11 @@ public class Enemy : MonoBehaviour
     public bool isAttack =false;//是否正在攻击，防止攻击的时候转向
     public float attackDelay =4f;//攻击间隔
     public float currentAttackDelay;
-    
     public bool isDeath = false;
     public bool stop;
     public float lostTimeCounter;//转化为正常巡逻状态
     public float lostTime = 3f;
+    public Attack attack;
 
 
     // Start is called before the first frame update
@@ -48,15 +48,16 @@ public class Enemy : MonoBehaviour
         lostTimeCounter = lostTime;
         currentStopTime = stopTime; 
         Character character = GetComponent<Character>();
+        Attack attack = GetComponent<Attack>();
     }
 
     public void OnEnable()
     {
         currentState = patrolState;
-        currentState.OnEnter(this);
+        currentState.OnEnter(this);               //传入当前的enemy
     }
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
         Back();
         currentState.LogicUpdate();

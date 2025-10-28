@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FrogPatrolState : BaseState
+public class OrcPatrolState : BaseState
 {
+    
+
     public override void OnEnter(Enemy enemy)
     {
         currentenemy = enemy;
-        Debug.Log("ÇàÍÜÑ²Âß×´Ì¬");
         currentenemy.canMove = true;
         currentenemy.currentStopTime = currentenemy.stopTime;
     }
@@ -30,12 +31,13 @@ public class FrogPatrolState : BaseState
             currentenemy.SwitchState(NPCState.Attack);
         }
         currentenemy.CheckWall();
-
     }
+   
+
     public override void PhysicsUpdate()
     {
         currentenemy.currentSpeed = currentenemy.moveSpeed;
-    }
+    } 
     public override void OnExit()
     {
         currentenemy.lostTimeCounter = currentenemy.lostTime;
