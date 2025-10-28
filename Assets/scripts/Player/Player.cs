@@ -34,6 +34,8 @@ public class Player : MonoBehaviour
     [Header("玩家跳跃参数")]
     public float jumpForce = 16.5f;
     public bool isJump = false;
+    // 新增：蹬墙跳的水平力参数（可在Inspector中调整）
+    public float wallJumpHorizontalForce = 5f;
     [Header("玩家Dash参数")]
     public float DeshForce = 10.0f;
     public bool isDash =false;
@@ -59,6 +61,11 @@ public class Player : MonoBehaviour
     public float beginhurtForce=5;
     public float currenthurtForce=5;
     public static Player instance;
+    [Header("变色龙隐身")]
+    // 缓存精灵渲染器（用于控制透明度）
+    public SpriteRenderer chameleonRenderer;
+    // 标记是否正在执行透明状态（避免重复触发）
+    public  bool isTransparent = false;
     [Header("死亡")]
     public bool Isdeath =  false;
     [Header("攻击")]
@@ -80,7 +87,9 @@ public class Player : MonoBehaviour
     {
        isPlayer,
        isBora,
-       isFrog
+       isFrog,
+       isChameleon,
+       isBat
     }
     private void Awake()
     {
@@ -123,14 +132,24 @@ public class Player : MonoBehaviour
         if (physicsCheck.CheckGround())
         {
             isWallMove = false;
-            rb.gravityScale = 4;
+            if (State !=PlayerState.isBat)
+            {
+                rb.gravityScale = 4;
+            }   
         }
         if (!physicsCheck.IsWall)
         {
             isWallMove = false;
-            rb.gravityScale = 4;
+            if (State != PlayerState.isBat)
+            {
+                rb.gravityScale = 4;
+            }
         }
-        
+        if(State == PlayerState.isBat) //蝙蝠不会下落
+        {
+            rb.gravityScale = 0;
+        }
+
     }
     private void FixedUpdate()
     {
@@ -178,9 +197,26 @@ public class Player : MonoBehaviour
 
     IEnumerator OneJump()
     {
-        if (physicsCheck.Isground)
+        // 在地面或墙上可以起跳
+        if (physicsCheck.Isground || isWallMove)
         {
-            rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+            if (isWallMove)
+            {
+                CanMove = false;
+                Debug.Log("蹬墙跳");
+                // 获取与墙方向相反的水平方向力
+                float horizontalForce = transform.localScale.x > 0 ? -wallJumpHorizontalForce : wallJumpHorizontalForce;
+                // 施加向上和水平方向的力实现蹬墙跳
+                rb.AddForce(new Vector2(horizontalForce, jumpForce), ForceMode2D.Impulse);
+                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                StartCoroutine(IsImmuneToFallDamage());
+            }
+            else
+            {
+                // 普通地面跳跃：只施加向上的力
+                rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+            }
+
             StartCoroutine(JumpEffect());
             yield return new WaitForSeconds(0.1f);
             isJump = true;
@@ -239,9 +275,53 @@ public class Player : MonoBehaviour
                 }
                 Bar.instance.CurrentStamina -= DeshSta;
                 break;
+
+            case PlayerState.isChameleon:
+                // 避免重复触发（如果已经在透明状态，直接返回）
+                if (isTransparent) return;
+
+                // 1. 保存原始状态（用于5秒后恢复）
+                Color originalColor = chameleonRenderer.color; // 原始颜色（包含透明度）
+                int originalLayer = gameObject.layer;       // 原始图层
+
+                // 2. 设置透明效果（alpha值0.2为半透明，可根据需求调整，0为完全透明）
+                chameleonRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0.2f);
+
+                // 3. 切换到"enemy"图层（注意：确保项目中存在名为"enemy"的图层，否则需修改名称）
+                int enemyLayer = LayerMask.NameToLayer("Enemy");
+                if (enemyLayer != -1) // 检查图层是否存在
+                {
+                    gameObject.layer = enemyLayer;
+                }
+                else
+                {
+                    Debug.LogError("未找到名为'enemy'的图层，请检查图层设置！");
+                    return; // 图层不存在时终止逻辑
+                }
+
+                // 4. 标记为透明状态
+                isTransparent = true;
+
+                // 5. 启动协程，5秒后恢复原始状态
+                StartCoroutine(ResetChameleonState(originalColor, originalLayer));
+                break;
             default:
                 break;
         }
+    }
+    private IEnumerator ResetChameleonState(Color originalColor, int originalLayer)
+    {
+        // 等待5秒
+        yield return new WaitForSeconds(5f);
+
+        // 恢复原始透明度
+        chameleonRenderer.color = originalColor;
+
+        // 恢复原始图层
+        gameObject.layer = originalLayer;
+
+        // 重置透明状态标记
+        isTransparent = false;
     }
     private void OnSkillPerformed(InputAction.CallbackContext context)
     {
@@ -316,7 +396,11 @@ public class Player : MonoBehaviour
                 break;
             case PlayerState.isFrog:
                 Player_FrogAnimation.instance.PlayerAttack();
-                isAttack = true;
+                isAttack = true;//在动画事件中执行AttackFashing关闭isAttack
+                break;
+            case PlayerState.isChameleon:
+                Player_ChameleonAinmation.instance.PlayerAttack();
+                isAttack = true;//在动画事件中执行AttackFashing关闭isAttack
                 break;
             default:
                 break;
@@ -529,7 +613,7 @@ public class Player : MonoBehaviour
 
     private void Desh()
     {
-        if(physicsCheck.IsWall && transform.localScale.x == -1)
+        if(physicsCheck.IsWall)
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
         }
@@ -566,7 +650,7 @@ public class Player : MonoBehaviour
         rb.velocity= Vector3.zero;
         Player.instance.isGetHurt = false;
     }
-    public void PlayeDead()
+    public void PlayeDead()//如果是变身状态死亡，先变回人类形态再死亡
     {
         Debug.Log("角色死亡");
         input.Player.Disable();
@@ -580,6 +664,16 @@ public class Player : MonoBehaviour
             Invoke("Dead", 0.4f);
         }
         else if (State == PlayerState.isFrog)
+        {
+            ChangeForm.instance.ChangeToPlayer();
+            Invoke("Dead", 0.4f);
+        }
+        else if (State == PlayerState.isChameleon)
+        {
+            ChangeForm.instance.ChangeToPlayer();
+            Invoke("Dead", 0.4f);
+        }
+        else if(State == PlayerState.isBat)
         {
             ChangeForm.instance.ChangeToPlayer();
             Invoke("Dead", 0.4f);
@@ -604,6 +698,23 @@ public class Player : MonoBehaviour
         else if(State == PlayerState.isFrog)
         {
             Player_FrogAnimation.instance.PlayerHurt();
+        }
+        else if(State == PlayerState.isChameleon)
+        {
+            Player_ChameleonAinmation.instance.PlayerHurt();
+        }
+        else if(State == PlayerState.isBat)
+        {
+            Player_BatAnimation.instance.PlayerHurt();
+        }
+    }
+    IEnumerator IsImmuneToFallDamage()//短时间内免疫坠落伤害
+    {
+        character.isImmuneToFallDamage = true;
+        yield return new WaitForSeconds(0.5f);
+        if(State != Player.PlayerState.isFrog)
+        {
+            character.isImmuneToFallDamage = false;
         }
     }
 }

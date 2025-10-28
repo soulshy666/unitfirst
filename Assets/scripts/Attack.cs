@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static Player;
 
 public class Attack : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class Attack : MonoBehaviour
         damage = begindamage * (1 + randomOffset);
         if (other.tag != this.tag)//敌人不攻击同类，玩家可以攻击同类
         {
-            if(Player.instance.crouchingAttack && other.GetComponent<Player>() == null && other.GetComponent<Enemy>()!=null)
+            if (Player.instance.crouchingAttack && other.GetComponent<Player>() == null && other.GetComponent<Enemy>()!=null)
             {
                 Enemy enemy = other.GetComponent<Enemy>();
                 if (enemy.currentState == enemy.patrolState || enemy.currentState == enemy.hurtState)
@@ -55,6 +56,7 @@ public class Attack : MonoBehaviour
             else if((!Player.instance.isShield && !Player.instance.shieldAttack) || other.GetComponent<Player>() != null)//
             {
                 other.GetComponent<Character>()?.TakeDamage(this);
+                
             }
                 
         }

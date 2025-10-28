@@ -8,7 +8,6 @@ public class FrogPatrolState : BaseState
     {
         currentenemy = enemy;
         Debug.Log("ÇàÍÜÑ²Âß×´Ì¬");
-        currentenemy.currentSpeed = currentenemy.moveSpeed;
         currentenemy.canMove = true;
         currentenemy.currentStopTime = currentenemy.stopTime;
     }
@@ -35,7 +34,7 @@ public class FrogPatrolState : BaseState
     }
     public override void PhysicsUpdate()
     {
-
+        currentenemy.currentSpeed = currentenemy.moveSpeed;
     }
     public override void OnExit()
     {

@@ -10,7 +10,7 @@ public class PhysicsCheck : MonoBehaviour
     public LayerMask groundLayer;
     public Vector2 groundOffset;
     public Vector2 bottonY;
-
+    [Header("墙体检测设置")]
     // 墙壁检测相关
     public Vector2 wallOffset;
     public bool IsWall;
@@ -20,6 +20,7 @@ public class PhysicsCheck : MonoBehaviour
     public LayerMask playerLayer; // 玩家所在的层
     public Vector2 playerCheckOffset; // 前方玩家检测点偏移
     public bool IsDetectPlayer; // 是否检测到前方玩家
+
 
     // 背后玩家检测相关
     [Header("背后玩家检测设置")]
@@ -58,6 +59,7 @@ public class PhysicsCheck : MonoBehaviour
         IsWall = isWallDetected; // 更新公共变量
         return isWallDetected; // 返回检测结果
     }
+
 
     // 前方玩家检测（适配朝向，新增Tag判断）
     public bool CheckPlayer()
@@ -126,7 +128,7 @@ public class PhysicsCheck : MonoBehaviour
         Gizmos.color = Color.green;
         Vector2 gizmoGroundOffset = new Vector2(groundOffset.x * transform.localScale.x, groundOffset.y);
         Gizmos.DrawWireSphere((Vector2)transform.position + gizmoGroundOffset, checkdistance);
-
+        //墙面检测范围（蓝色，适配朝向）
         Gizmos.color = Color.blue;
         Vector2 gizmoLeftOffset = new Vector2(wallOffset.x * transform.localScale.x, wallOffset.y);
         Gizmos.DrawWireSphere((Vector2)transform.position + gizmoLeftOffset, checkdistance);

@@ -77,7 +77,10 @@ public class PlayerAnimation : MonoBehaviour
     {
         Player.instance.isShield = false;
     }
-
-
-
+    public void CanMove()//当蹬墙跳落地的时候调用，可以移动
+    {
+        Player.instance.CanMove = true;
+    }
+    
+   
 }

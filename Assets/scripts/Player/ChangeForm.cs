@@ -10,7 +10,9 @@ public class ChangeForm : MonoBehaviour
     public GameObject changeSpite;// 切换形态的
     public GameObject player;
     public GameObject bora;
-    public GameObject Frog; 
+    public GameObject frog;
+    public GameObject chameleon;
+    public GameObject bat;
     public float changeTime = 15f;
     public float nowTime=0;
     public Image changebar;
@@ -46,6 +48,7 @@ public class ChangeForm : MonoBehaviour
     public void ChangeToPlayer()
     {
         if (Player.instance.State == Player.PlayerState.isPlayer) return;
+        Player.instance.character.isImmuneToFallDamage = false;//正常受到跌落伤害
         Player.instance.tag = "Player";
         renderer2.color = Color.white;//防止野猪蓄力变红无法变回白色
         Player.instance.isUp = false;
@@ -67,11 +70,35 @@ public class ChangeForm : MonoBehaviour
     }
     public void ChangeToFrog()
     {
-        Player.instance.tag = "Frog";
         if (Player.instance.State == Player.PlayerState.isFrog) return;
+        Player.instance.character.isImmuneToFallDamage = true;//青蛙形态免疫跌落伤害
+        Player.instance.tag = "Frog";    
         ischange = true;
         Player.instance.State = Player.PlayerState.isFrog;
-        changeForm(Frog);
+        changeForm(frog);
+
+    }
+    public void ChangeToChameleon()
+    {
+        if (Player.instance.State == Player.PlayerState.isChameleon) return;
+        Player.instance.tag = "Chameleon";
+        ischange = true;
+        Player.instance.State = Player.PlayerState.isChameleon;
+        changeForm(chameleon);
+    }
+    public void ChangeToBat()
+    {  
+        if (Player.instance.State == Player.PlayerState.isBat) return;
+        Player.instance.tag = "Bat";
+        ischange = true;
+        Player.instance.State = Player.PlayerState.isBat;
+        // 变身蝙蝠时升高Y轴位置，实现飞在空中的效果
+        // 获取当前位置
+        Vector3 currentPos = Player.instance.transform.position;
+        // 在当前Y轴基础上增加高度（可根据实际需求调整数值，这里用1.5f举例）
+        float liftHeight = 1f;
+        Player.instance.transform.position = new Vector3(currentPos.x, currentPos.y + liftHeight, currentPos.z);
+        changeForm(bat);
     }
     public void changeForm(GameObject targetObject)
     {

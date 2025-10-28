@@ -25,7 +25,6 @@ public class Player_BoraAnimation : MonoBehaviour
     public void SetAnimator()
     {
       animator.SetFloat("Run", Mathf.Abs(rb.velocity.x));
-      animator.SetBool("IsDeath", Player.instance.Isdeath);
       animator.SetBool("IsUp", Player.instance.isUp);
       animator.SetBool("IsDesh", Player.instance.isgo);
     }
@@ -33,13 +32,12 @@ public class Player_BoraAnimation : MonoBehaviour
     {
       animator.SetTrigger("IsHurt");
     }
-    public void PlayerDead()
+    /*public void PlayerDead()
     {
         animator.SetBool("IsDeath", false);
-    }
-    public void DestroyAfterAnimation()
+    }*/
+    public void DestroyAfterAnimation()//在死亡动画里调用
     {
-        Debug.Log("shanchu");
         // 获取当前物体的父物体（使用空值传播运算符处理父物体为null的情况）
         GameObject parentObject = this.transform.parent?.gameObject;
 
