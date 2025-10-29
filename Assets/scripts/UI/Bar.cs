@@ -9,6 +9,8 @@ public class Bar : MonoBehaviour
     public Image heathGreen;
     public Image heathRed;
     public Image heathYellow;
+    public Text healthtext;
+    public Attack attack;
     public Character character;
     public float Current;//临时记录血条
     [Header("耐力")]
@@ -44,6 +46,9 @@ public class Bar : MonoBehaviour
         {
             Current = character.CurrentHealth;
         }
+        // 直接显示当前值/最大值
+        // 用 "0" 确保显示为整数（自动四舍五入）
+        healthtext.text = $"{Player.instance.character.CurrentHealth:0}/{Player.instance.character.HealthMax:0}";
     }
 
     public void ChangeBar()

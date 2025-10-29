@@ -199,6 +199,11 @@ public class Character : MonoBehaviour
         {
             Teiggerinvulnerable();
             CurrentHealth -= attacker.damage;
+            if (Player.instance.State == PlayerState.isBat && attacker.tag == "Bat")//如果是蝙蝠就吸血
+            {
+                Debug.Log("666");
+                Player.instance.character.CurrentHealth += attacker.damage;
+            }
             DamageNumber1.instance.ShowDamamgeNumber1(this, attacker.damage);
             Player.instance.currenthurtForce = Player.instance.beginhurtForce;
             OnTakeDamage?.Invoke(attacker.transform);

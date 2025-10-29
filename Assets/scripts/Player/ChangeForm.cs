@@ -13,12 +13,15 @@ public class ChangeForm : MonoBehaviour
     public GameObject frog;
     public GameObject chameleon;
     public GameObject bat;
+    public GameObject Snail;
     public float changeTime = 15f;
     public float nowTime=0;
     public Image changebar;
     public bool ischange = false;//表示已经进入了变身状态
+    public PhysicsCheck physicsCheck;
     public SpriteRenderer renderer2 ;
     public static ChangeForm instance;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -48,6 +51,14 @@ public class ChangeForm : MonoBehaviour
     public void ChangeToPlayer()
     {
         if (Player.instance.State == Player.PlayerState.isPlayer) return;
+        Player.instance.isCeiling = false;
+        Player.instance.canCeiling = false;
+        if(Player.instance.character.CurrentHealth > Player.instance.character.HealthMax)//变回人时候伤害无法超过最高生命上线
+        {
+            Player.instance.character.CurrentHealth = Player.instance.character.HealthMax;
+        }
+        physicsCheck.wallOffset = new Vector2(1,1);//恢复墙检测偏移
+        physicsCheck.groundOffset = new Vector2(0f, 0f);//恢复墙检测偏移
         Player.instance.character.isImmuneToFallDamage = false;//正常受到跌落伤害
         Player.instance.tag = "Player";
         renderer2.color = Color.white;//防止野猪蓄力变红无法变回白色
@@ -86,9 +97,20 @@ public class ChangeForm : MonoBehaviour
         Player.instance.State = Player.PlayerState.isChameleon;
         changeForm(chameleon);
     }
+    public void ChangeToSnail()
+    {
+        if (Player.instance.State == Player.PlayerState.isSnail) return;
+        if (Player.instance.isDiscard) { return;}
+        Player.instance.tag = "Snail";
+        ischange = true;
+        Player.instance.State = Player.PlayerState.isSnail;
+        changeForm(Snail);
+    }
     public void ChangeToBat()
     {  
         if (Player.instance.State == Player.PlayerState.isBat) return;
+        physicsCheck.wallOffset = new Vector2(0f, 2.2f);//降低墙检测偏移
+        physicsCheck.groundOffset = new Vector2(0f, -1f);//降低墙检测偏移
         Player.instance.tag = "Bat";
         ischange = true;
         Player.instance.State = Player.PlayerState.isBat;

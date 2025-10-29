@@ -66,6 +66,10 @@ public class Player : MonoBehaviour
     public SpriteRenderer chameleonRenderer;
     // 标记是否正在执行透明状态（避免重复触发）
     public  bool isTransparent = false;
+    [Header("蝙蝠上天花板")]
+    public bool isCeiling = false;//是否播放挂墙动画
+    public bool canCeiling = false;//是否使用挂墙技能
+    public bool isfall=false;
     [Header("死亡")]
     public bool Isdeath =  false;
     [Header("攻击")]
@@ -79,8 +83,9 @@ public class Player : MonoBehaviour
     public float uptime;//蓄力时间
     public bool isgo;
     public float BoraDeshSpeed = 700f;
-
-
+    [Header("蜗牛丢弃")]
+    public bool isDiscard;
+    public GameObject shell;
 
     // 创建bool数组并放入这两个参数
     public enum PlayerState
@@ -89,7 +94,8 @@ public class Player : MonoBehaviour
        isBora,
        isFrog,
        isChameleon,
-       isBat
+       isBat,
+       isSnail
     }
     private void Awake()
     {
@@ -107,7 +113,6 @@ public class Player : MonoBehaviour
         input.Player.Shield.performed += Shield;
         input.Player.Shield.canceled += (context) => { isShield = false;if (!isGetHurt) { rb.velocity = Vector3.zero; } };//如果不是被敌人击退的自己不会被主动击退 
         input.Player.WallMove.performed += WallMove;
-        
         character = GetComponent<Character>();
     }
     
@@ -150,6 +155,15 @@ public class Player : MonoBehaviour
             rb.gravityScale = 0;
         }
 
+        if (physicsCheck.CheckWall() && State == PlayerState.isBat)
+        {
+            isCeiling = true;
+        }
+        else if(!physicsCheck.CheckWall() && State == PlayerState.isBat)
+        {
+            isCeiling = false;
+        }
+
     }
     private void FixedUpdate()
     {
@@ -180,13 +194,30 @@ public class Player : MonoBehaviour
         {
           Desh();
         }
+        if(canCeiling && State == PlayerState.isBat)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, 5);
+        }
+        else if(!canCeiling && State == PlayerState.isBat && !physicsCheck.CheckGround() && isfall )
+        {
+            rb.velocity = new Vector2(rb.velocity.x, -5);
+        }
+        else if (!canCeiling && State == PlayerState.isBat && physicsCheck.CheckGround() )
+        {
+            rb.velocity = new Vector2(rb.velocity.x, 0);
+            isfall = false;
+        }
+
     }
     #region 新版操作系统执行的函数
     private void Jump(InputAction.CallbackContext context)
     {
         if (isCrouching) { return; }
+        if(State == PlayerState.isBat)   {return;}
+        if (State == PlayerState.isSnail){return;}
         if (isRoll) { return; }
         if (isShield) { return; }
+        
         if (isJump && State == PlayerState.isFrog)
         {
             TwoJump();
@@ -276,7 +307,7 @@ public class Player : MonoBehaviour
                 Bar.instance.CurrentStamina -= DeshSta;
                 break;
 
-            case PlayerState.isChameleon:
+            case PlayerState.isChameleon://###################################################################变色龙隐身技能
                 // 避免重复触发（如果已经在透明状态，直接返回）
                 if (isTransparent) return;
 
@@ -304,6 +335,25 @@ public class Player : MonoBehaviour
 
                 // 5. 启动协程，5秒后恢复原始状态
                 StartCoroutine(ResetChameleonState(originalColor, originalLayer));
+                break;
+            case PlayerState.isBat:// 蝙蝠形态的技能逻辑（可根据需求添加）######################################
+                if (canCeiling==false)
+                {
+                   canCeiling = true;
+                }
+                else if(canCeiling==true && isCeiling)
+                { 
+                    canCeiling = false;
+                    isfall = true;
+                }
+                    break;
+            case PlayerState.isSnail:// 蜗牛形态的技能逻辑（可根据需求添加）######################################
+                if(!isDiscard)
+                {
+                    isDiscard = true;
+                    shell.gameObject.SetActive(true);
+                    shell.transform.position = transform.position;
+                }
                 break;
             default:
                 break;
@@ -400,6 +450,10 @@ public class Player : MonoBehaviour
                 break;
             case PlayerState.isChameleon:
                 Player_ChameleonAinmation.instance.PlayerAttack();
+                isAttack = true;//在动画事件中执行AttackFashing关闭isAttack
+                break;
+            case PlayerState.isBat:
+                Player_BatAnimation.instance.PlayerAttack();
                 isAttack = true;//在动画事件中执行AttackFashing关闭isAttack
                 break;
             default:
@@ -658,26 +712,12 @@ public class Player : MonoBehaviour
         {
             Isdeath = true;
         }
-        else if (State == PlayerState.isBora)
+        else
         {
             ChangeForm.instance.ChangeToPlayer();
             Invoke("Dead", 0.4f);
         }
-        else if (State == PlayerState.isFrog)
-        {
-            ChangeForm.instance.ChangeToPlayer();
-            Invoke("Dead", 0.4f);
-        }
-        else if (State == PlayerState.isChameleon)
-        {
-            ChangeForm.instance.ChangeToPlayer();
-            Invoke("Dead", 0.4f);
-        }
-        else if(State == PlayerState.isBat)
-        {
-            ChangeForm.instance.ChangeToPlayer();
-            Invoke("Dead", 0.4f);
-        }
+
     }
         public void Dead()
         {
@@ -706,6 +746,10 @@ public class Player : MonoBehaviour
         else if(State == PlayerState.isBat)
         {
             Player_BatAnimation.instance.PlayerHurt();
+        }
+        else if (State == PlayerState.isSnail)
+        {
+            Player_SnailAnimation.instance.PlayerHurt();
         }
     }
     IEnumerator IsImmuneToFallDamage()//短时间内免疫坠落伤害

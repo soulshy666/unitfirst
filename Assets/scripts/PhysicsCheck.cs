@@ -112,13 +112,29 @@ public class PhysicsCheck : MonoBehaviour
     }
 
     // 攻击范围玩家检测函数（适配朝向）
+    // 攻击范围玩家检测函数（适配朝向，增加Tag判断）
     public bool IntAttack()
     {
         Vector2 scaledAttackOffset = new Vector2(intAttackOffset.x * transform.localScale.x, intAttackOffset.y);
         Vector2 attackCheckPos = (Vector2)transform.position + scaledAttackOffset;
-        bool isAttackDetected = Physics2D.OverlapCircle(attackCheckPos, checkdistance, playerLayer);
-        IsIntAttackDetected = isAttackDetected;
-        return isAttackDetected;
+        // 获取检测到的碰撞体
+        Collider2D detectedCollider = Physics2D.OverlapCircle(attackCheckPos, checkdistance, playerLayer);
+
+        if (detectedCollider != null)
+        {
+            // 检测到物体时，判断Tag是否与自身相同
+            if (detectedCollider.tag == gameObject.tag)
+            {
+                IsIntAttackDetected = false;
+                return false;
+            }
+            // Tag不同则视为有效检测
+            IsIntAttackDetected = true;
+            return true;
+        }
+        // 未检测到物体
+        IsIntAttackDetected = false;
+        return false;
     }
 
     // 可视化所有检测范围

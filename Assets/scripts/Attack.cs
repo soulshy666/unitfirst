@@ -30,7 +30,7 @@ public class Attack : MonoBehaviour
             if (Player.instance.crouchingAttack && other.GetComponent<Player>() == null && other.GetComponent<Enemy>()!=null)
             {
                 Enemy enemy = other.GetComponent<Enemy>();
-                if (enemy.currentState == enemy.patrolState || enemy.currentState == enemy.hurtState)
+                if (enemy.currentState == enemy.patrolState)
                 {
                     other.GetComponent<Character>()?.CrouchingAttack();
                     other.GetComponent<Character>()?.TakeDamage3(this);
@@ -53,10 +53,9 @@ public class Attack : MonoBehaviour
                     return;
                 }
             }
-            else if((!Player.instance.isShield && !Player.instance.shieldAttack) || other.GetComponent<Player>() != null)//
+            else if((!Player.instance.isShield && !Player.instance.shieldAttack) || other.GetComponent<Player>() != null)//ÆÕÍ¨¹¥»÷
             {
                 other.GetComponent<Character>()?.TakeDamage(this);
-                
             }
                 
         }

@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player_BatAnimation : MonoBehaviour
+public class Player_SnailAnimation : MonoBehaviour
 {
     public Animator animator;
     public Rigidbody2D rb;
-    public static Player_BatAnimation instance;
+    public static Player_SnailAnimation instance;
     private void Awake()
     {
         instance = this;
@@ -14,6 +14,7 @@ public class Player_BatAnimation : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+        animator.SetFloat("Walk", 0); // 初始化跑步参数为0
     }
 
     // Update is called once per frame
@@ -23,21 +24,13 @@ public class Player_BatAnimation : MonoBehaviour
     }
     public void SetAnimator()
     {
-        animator.SetBool("IsCeiling",Player.instance.isCeiling);
+        animator.SetFloat("Walk", Mathf.Abs(rb.velocity.x));
+        animator.SetBool("IsDiscard", Player.instance.isDiscard);
     }
     public void PlayerHurt()
     {
         animator.SetTrigger("IsHurt");
     }
-    public void PlayerAttack()
-    {
-        Player.instance.tag = "Player";
-        animator.SetTrigger("Attack");
-    }
-    /*public void PlayerDead()
-    {
-        animator.SetBool("IsDeath", false);
-    }*/
     public void DestroyAfterAnimation()//在死亡动画里调用
     {
         // 获取当前物体的父物体（使用空值传播运算符处理父物体为null的情况）
