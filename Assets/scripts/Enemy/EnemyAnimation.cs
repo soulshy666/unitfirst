@@ -51,5 +51,4 @@ public class EnemyAnimation : MonoBehaviour
     {
         enemy.isAttack = false;
     }
-
 }

@@ -1,16 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class FrogChaseState : BaseState
+public class ChameleonChaseState : BaseState
 {
+
+
     public override void OnEnter(Enemy enemy)
     {
-        Debug.Log("ÇàÍÜ×·»÷×´Ì¬");
+        Debug.Log("±äÉ«Áú×·»÷×´Ì¬");
         currentenemy = enemy;
         currentenemy.currentSpeed = currentenemy.chaseSpeed;
-
     }
     public override void LogicUpdate()
     {
@@ -26,8 +26,8 @@ public class FrogChaseState : BaseState
         {
             currentenemy.SwitchState(NPCState.Attack);
         }
-        
     }
+ 
 
     public override void PhysicsUpdate()
     {
@@ -60,6 +60,6 @@ public class FrogChaseState : BaseState
     }
     public override void OnExit()
     {
-
+        
     }
 }

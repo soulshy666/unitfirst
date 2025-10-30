@@ -2,18 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bora : Enemy
+public class Chameleon : Enemy
 {
-    // Start is called before the first frame update
     public override void Move()
     {
+        
         base.Move();
     }
+
     protected override void Awake()
     {
         base.Awake();
-        patrolState = new BoraPatrolState();
-        attackState = new BoraAttackState();
-        
+        patrolState = new ChameleonPatrolState();
+        attackState = new ChameleonAttackState();
+        chaseState = new ChameleonChaseState();
+       
     }
 }
