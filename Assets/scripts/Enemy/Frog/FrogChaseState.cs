@@ -49,8 +49,9 @@ public class FrogChaseState : BaseState
         Vector2 attackReferencePos = (Vector2)currentenemy.transform.position + scaledIntAttackOffset;
 
         // 基于参考位置判断玩家方位，设置敌人朝向（保留原地面检测条件）
-        if (currentenemy.shell == null)
+        if ((currentenemy.shell != null && !currentenemy.shell.activeSelf) || currentenemy.shell == null)
         {
+
             if (Player.instance.transform.position.x <= attackReferencePos.x && Player.instance.physicsCheck.Isground)
             {
                 currentenemy.transform.localScale = new Vector2(1, 1);
@@ -60,7 +61,7 @@ public class FrogChaseState : BaseState
                 currentenemy.transform.localScale = new Vector2(-1, 1);
             }
         }
-        else if (currentenemy.shell != null)
+        else if (currentenemy.shell != null && currentenemy.shell.activeSelf)
         {
             if (currentenemy.shell.transform.position.x <= attackReferencePos.x && Player.instance.physicsCheck.Isground)
             {
