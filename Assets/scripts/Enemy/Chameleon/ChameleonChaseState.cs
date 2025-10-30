@@ -2,15 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OrcChaseState : BaseState
+public class ChameleonChaseState : BaseState
 {
+
+
     public override void OnEnter(Enemy enemy)
     {
-
-        Debug.Log("哥布林追击状态");
+        Debug.Log("变色龙追击状态");
         currentenemy = enemy;
         currentenemy.currentSpeed = currentenemy.chaseSpeed;
-    } 
+    }
     public override void LogicUpdate()
     {
         currentenemy.currentStopTime = 0;
@@ -20,20 +21,17 @@ public class OrcChaseState : BaseState
         }
         currentenemy.CheckWall();
 
+
         if (currentenemy.physicsCheck.IntAttack())
         {
             currentenemy.SwitchState(NPCState.Attack);
         }
-
     }
-
-    
-
-   
+ 
 
     public override void PhysicsUpdate()
     {
-        // 获取当前敌人的PhysicsCheck组件（确保敌人对象上已挂载该组件)
+        // 获取当前敌人的PhysicsCheck组件（确保敌人对象上已挂载该组件）
         PhysicsCheck physicsCheck = currentenemy.GetComponent<PhysicsCheck>();
         if (physicsCheck == null)
         {
@@ -62,6 +60,6 @@ public class OrcChaseState : BaseState
     }
     public override void OnExit()
     {
+        
     }
-   
 }
