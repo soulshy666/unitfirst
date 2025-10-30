@@ -37,7 +37,7 @@ public class Enemy : MonoBehaviour
     public float lostTimeCounter;//转化为正常巡逻状态
     public float lostTime = 3f;
     public Attack attack;
-
+    public GameObject shell;
 
     // Start is called before the first frame update
     protected virtual void Awake()

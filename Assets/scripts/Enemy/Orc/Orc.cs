@@ -16,6 +16,5 @@ public class Orc : Enemy
         patrolState = new OrcPatrolState();
         attackState = new OrcAttackState();
         chaseState = new OrcChaseState();
-        hurtState = new OrcHurtState();
     }
 }

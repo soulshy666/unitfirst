@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class OrcChaseState : BaseState
@@ -26,11 +27,6 @@ public class OrcChaseState : BaseState
         }
 
     }
-
-    
-
-   
-
     public override void PhysicsUpdate()
     {
         // 获取当前敌人的PhysicsCheck组件（确保敌人对象上已挂载该组件)
@@ -51,13 +47,27 @@ public class OrcChaseState : BaseState
         Vector2 attackReferencePos = (Vector2)currentenemy.transform.position + scaledIntAttackOffset;
 
         // 基于参考位置判断玩家方位，设置敌人朝向（保留原地面检测条件）
-        if (Player.instance.transform.position.x <= attackReferencePos.x && Player.instance.physicsCheck.Isground)
+        if (currentenemy.shell == null)
         {
-            currentenemy.transform.localScale = new Vector2(1, 1);
+            if (Player.instance.transform.position.x <= attackReferencePos.x && Player.instance.physicsCheck.Isground)
+            {
+                currentenemy.transform.localScale = new Vector2(1, 1);
+            }
+            else if (Player.instance.transform.position.x > attackReferencePos.x && Player.instance.physicsCheck.Isground)
+            {
+                currentenemy.transform.localScale = new Vector2(-1, 1);
+            }
         }
-        else if (Player.instance.transform.position.x > attackReferencePos.x && Player.instance.physicsCheck.Isground)
+        else if (currentenemy.shell != null)
         {
-            currentenemy.transform.localScale = new Vector2(-1, 1);
+            if (currentenemy.shell.transform.position.x <= attackReferencePos.x && Player.instance.physicsCheck.Isground)
+            {
+                currentenemy.transform.localScale = new Vector2(1, 1);
+            }
+            else if (currentenemy.shell.transform.position.x > attackReferencePos.x && Player.instance.physicsCheck.Isground)
+            {
+                currentenemy.transform.localScale = new Vector2(-1, 1);
+            }
         }
     }
     public override void OnExit()

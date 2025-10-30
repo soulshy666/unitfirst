@@ -9,7 +9,6 @@ public class PhysicsCheck : MonoBehaviour
     public float checkdistance = 0.3f;
     public LayerMask groundLayer;
     public Vector2 groundOffset;
-    public Vector2 bottonY;
     [Header("墙体检测设置")]
     // 墙壁检测相关
     public Vector2 wallOffset;
